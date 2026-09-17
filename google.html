@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Таблицы — функции</title>
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #151b23;
+      --panel-light: #1d2632;
+      --border: #2c3948;
+      --text: #f1f5f9;
+      --muted: #9aa8b8;
+      --green: #35d07f;
+      --green-dark: #1e9d5d;
+      --blue: #48a9ff;
+      --yellow: #ffd166;
+      --shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(53, 208, 127, 0.12), transparent 28rem),
+        radial-gradient(circle at top right, rgba(72, 169, 255, 0.1), transparent 25rem),
+        var(--bg);
+    }
+
+    .container {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 42px 0 30px;
+      text-align: center;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      border-radius: 18px;
+      color: #07140d;
+      font-size: 34px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--green), #9affc4);
+      box-shadow: 0 0 35px rgba(53, 208, 127, 0.35);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 52px);
+      letter-spacing: -1.5px;
+    }
+
+    .subtitle {
+      max-width: 700px;
+      margin: 14px auto 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 12px;
+      z-index: 10;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(21, 27, 35, 0.88);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1 1 300px;
+    }
+
+    .search-box span {
+      position: absolute;
+      top: 50%;
+      left: 16px;
+      color: var(--muted);
+      font-size: 20px;
+      transform: translateY(-50%);
+    }
+
+    #search {
+      width: 100%;
+      padding: 14px 18px 14px 48px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      color: var(--text);
+      font-size: 15px;
+      background: #10161d;
+    }
+
+    #search:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(53, 208, 127, 0.12);
+    }
+
+    select {
+      min-width: 210px;
+      padding: 0 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+      color: var(--text);
+      background: #10161d;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .stats {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .stats b {
+      color: var(--green);
+    }
+
+    .category {
+      margin: 34px 0 42px;
+    }
+
+    .category-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 16px;
+      font-size: 25px;
+    }
+
+    .category-title::before {
+      content: "";
+      width: 5px;
+      height: 28px;
+      border-radius: 10px;
+      background: linear-gradient(var(--green), var(--blue));
+    }
+
+    .category-count {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: normal;
+    }
+
+    .functions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+      gap: 14px;
+    }
+
+    .function-card {
+      position: relative;
+      min-height: 130px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: linear-gradient(145deg, var(--panel), #111820);
+      transition: 0.2s ease;
+    }
+
+    .function-card:hover {
+      border-color: var(--green);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(53, 208, 127, 0.1);
+    }
+
+    .function-name {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 9px;
+      border-radius: 7px;
+      color: #06140c;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      font-weight: bold;
+      background: var(--green);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .function-name:hover {
+      background: #72e9a6;
+    }
+
+    .function-description {
+      margin: 0;
+      padding-right: 5px;
+      color: #c3cedb;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .copy-hint {
+      position: absolute;
+      right: 14px;
+      bottom: 13px;
+      color: #647486;
+      font-size: 11px;
+    }
+
+    .empty {
+      display: none;
+      padding: 55px 20px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 18px;
+    }
+
+    footer {
+      margin: 50px 0 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 30;
+      padding: 13px 18px;
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      color: white;
+      background: #183526;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 650px) {
+      .container {
+        width: min(100% - 20px, 1240px);
+      }
+
+      header {
+        padding-top: 28px;
+      }
+
+      .toolbar {
+        top: 6px;
+      }
+
+      select {
+        width: 100%;
+        min-height: 46px;
+      }
+
+      .stats {
+        width: 100%;
+        justify-content: center;
+        padding: 5px;
+      }
+
+      .functions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="container">
+    <div class="logo">ƒ</div>
+    <h1>Функции Google Таблиц</h1>
+    <p class="subtitle">
+      Удобный справочник формул: ищите нужную функцию, выбирайте категорию
+      и нажимайте на название, чтобы скопировать его.
+    </p>
+  </header>
+
+  <main class="container">
+    <section class="toolbar">
+      <div class="search-box">
+        <span>⌕</span>
+        <input
+          id="search"
+          type="search"
+          placeholder="Поиск функции или описания..."
+        >
+      </div>
+
+      <select id="categoryFilter">
+        <option value="all">Все категории</option>
+      </select>
+
+      <div class="stats">
+        Найдено: <b id="resultCount">0</b>
+      </div>
+    </section>
+
+    <div id="content"></div>
+
+    <div id="empty" class="empty">
+      Ничего не найдено. Попробуйте изменить поисковый запрос.
+    </div>
+
+    <footer>
+      Справочник функций Google Таблиц · Нажмите на название функции, чтобы скопировать его
+    </footer>
+  </main>
+
+  <div id="toast" class="toast">Функция скопирована</div>
+
+  <script>
+    const categories = [
+      {
+        name: "Математика",
+        icon: "∑",
+        items: [
+          ["SUM", "складывает числа"],
+          ["AVERAGE", "считает среднее значение"],
+          ["MIN", "находит минимальное значение"],
+          ["MAX", "находит максимальное значение"],
+          ["COUNT", "считает ячейки с числами"],
+          ["COUNTA", "считает непустые ячейки"],
+          ["COUNTBLANK", "считает пустые ячейки"],
+          ["ROUND", "округляет число"],
+          ["ROUNDUP", "округляет вверх"],
+          ["ROUNDDOWN", "округляет вниз"],
+          ["ABS", "возвращает модуль числа"],
+          ["POWER", "возводит число в степень"],
+          ["SQRT", "вычисляет квадратный корень"],
+          ["MOD", "возвращает остаток от деления"],
+          ["PRODUCT", "перемножает числа"],
+          ["SUMPRODUCT", "перемножает элементы и складывает результаты"],
+          ["RAND", "создаёт случайное число от 0 до 1"],
+          ["RANDBETWEEN", "создаёт случайное целое число"],
+          ["PI", "возвращает число π"]
+        ]
+      },
+      {
+        name: "Логика",
+        icon: "◇",
+        items: [
+          ["IF", "проверяет условие"],
+          ["IFS", "проверяет несколько условий"],
+          ["AND", "проверяет, выполнены ли все условия"],
+          ["OR", "проверяет, выполнено ли хотя бы одно условие"],
+          ["NOT", "меняет TRUE на FALSE и наоборот"],
+          ["IFERROR", "заменяет ошибку указанным значением"],
+          ["IFNA", "обрабатывает ошибку #N/A"],
+          ["TRUE", "возвращает TRUE"],
+          ["FALSE", "возвращает FALSE"]
+        ]
+      },
+      {
+        name: "Поиск и ссылки",
+        icon: "⌕",
+        items: [
+          ["VLOOKUP", "ищет значение по вертикали"],
+          ["HLOOKUP", "ищет значение по горизонтали"],
+          ["XLOOKUP", "современный поиск значения"],
+          ["LOOKUP", "выполняет поиск"],
+          ["INDEX", "возвращает значение по позиции"],
+          ["MATCH", "находит позицию значения"],
+          ["FILTER", "фильтрует данные"],
+          ["SORT", "сортирует данные"],
+          ["SORTN", "возвращает определённое количество результатов"],
+          ["UNIQUE", "убирает повторяющиеся значения"]
+        ]
+      },
+      {
+        name: "Текст",
+        icon: "T",
+        items: [
+          ["LEFT", "берёт символы слева"],
+          ["RIGHT", "берёт символы справа"],
+          ["MID", "берёт часть текста из середины"],
+          ["LEN", "считает количество символов"],
+          ["LOWER", "переводит текст в нижний регистр"],
+          ["UPPER", "переводит текст в верхний регистр"],
+          ["PROPER", "делает первые буквы слов заглавными"],
+          ["TRIM", "убирает лишние пробелы"],
+          ["SPLIT", "разделяет текст на ячейки"],
+          ["JOIN", "объединяет значения с разделителем"],
+          ["CONCATENATE", "объединяет текст"],
+          ["TEXTJOIN", "объединяет несколько значений с разделителем"],
+          ["CONCAT", "объединяет два значения"],
+          ["SUBSTITUTE", "заменяет один текст другим"],
+          ["REPLACE", "заменяет часть текста по позиции"],
+          ["SEARCH", "ищет текст внутри текста"],
+          ["FIND", "находит позицию текста"],
+          ["EXACT", "сравнивает два текста"],
+          ["TEXT", "форматирует число как текст"],
+          ["VALUE", "превращает текст в число"]
+        ]
+      },
+      {
+        name: "Дата и время",
+        icon: "◷",
+        items: [
+          ["TODAY", "возвращает сегодняшнюю дату"],
+          ["NOW", "возвращает текущую дату и время"],
+          ["DATE", "создаёт дату"],
+          ["DAY", "получает день"],
+          ["MONTH", "получает месяц"],
+          ["YEAR", "получает год"],
+          ["HOUR", "получает часы"],
+          ["MINUTE", "получает минуты"],
+          ["SECOND", "получает секунды"],
+          ["WEEKDAY", "определяет день недели"],
+          ["WEEKNUM", "возвращает номер недели"],
+          ["EDATE", "изменяет дату на указанное количество месяцев"],
+          ["EOMONTH", "возвращает последний день месяца"],
+          ["DATEDIF", "считает разницу между двумя датами"],
+          ["DAYS", "считает количество дней между датами"],
+          ["NETWORKDAYS", "считает количество рабочих дней"],
+          ["WORKDAY", "рассчитывает рабочую дату"]
+        ]
+      },
+      {
+        name: "Условия и диапазоны",
+        icon: "▦",
+        items: [
+          ["SUMIF", "сумма по одному условию"],
+          ["SUMIFS", "сумма по нескольким условиям"],
+          ["COUNTIF", "количество по одному условию"],
+          ["COUNTIFS", "количество по нескольким условиям"],
+          ["AVERAGEIF", "среднее по одному условию"],
+          ["AVERAGEIFS", "среднее по нескольким условиям"],
+          ["MAXIFS", "максимальное значение по условиям"],
+          ["MINIFS", "минимальное значение по условиям"]
+        ]
+      },
+      {
+        name: "Статистика",
+        icon: "▥",
+        items: [
+          ["MEDIAN", "находит медиану"],
+          ["MODE", "находит наиболее часто встречающееся значение"],
+          ["STDEV", "считает стандартное отклонение"],
+          ["STDEVP", "считает стандартное отклонение всей совокупности"],
+          ["VAR", "считает дисперсию"],
+          ["VARP", "считает дисперсию всей совокупности"],
+          ["PERCENTILE", "находит процентиль"],
+          ["QUARTILE", "находит квартиль"],
+          ["RANK", "определяет ранг числа"],
+          ["LARGE", "возвращает N-е наибольшее значение"],
+          ["SMALL", "возвращает N-е наименьшее значение"],
+          ["CORREL", "вычисляет корреляцию"],
+          ["COVAR", "вычисляет ковариацию"]
+        ]
+      },
+      {
+        name: "Массивы",
+        icon: "▤",
+        items: [
+          ["ARRAYFORMULA", "применяет формулу сразу к диапазону"],
+          ["FILTER", "создаёт отфильтрованный массив"],
+          ["SORT", "сортирует массив"],
+          ["UNIQUE", "убирает дубликаты"],
+          ["TRANSPOSE", "меняет строки и столбцы местами"],
+          ["SEQUENCE", "создаёт последовательность чисел"],
+          ["TOCOL", "превращает диапазон в один столбец"],
+          ["TOROW", "превращает диапазон в одну строку"],
+          ["CHOOSECOLS", "выбирает нужные столбцы"],
+          ["CHOOSEROWS", "выбирает нужные строки"],
+          ["VSTACK", "объединяет диапазоны вертикально"],
+          ["HSTACK", "объединяет диапазоны горизонтально"]
+        ]
+      },
+      {
+        name: "Импорт и интернет",
+        icon: "↗",
+        items: [
+          ["IMPORTRANGE", "получает данные из другой Google Таблицы"],
+          ["IMPORTHTML", "импортирует таблицы или списки с сайта"],
+          ["IMPORTXML", "получает данные с сайта через XPath"],
+          ["IMPORTDATA", "импортирует CSV или TSV"],
+          ["IMAGE", "показывает изображение по ссылке"],
+          ["HYPERLINK", "создаёт гиперссылку"]
+        ]
+      },
+      {
+        name: "Финансы",
+        icon: "₽",
+        items: [
+          ["PMT", "рассчитывает платёж по кредиту"],
+          ["PV", "рассчитывает текущую стоимость"],
+          ["FV", "рассчитывает будущую стоимость"],
+          ["NPV", "считает чистую приведённую стоимость"],
+          ["IRR", "считает внутреннюю норму доходности"],
+          ["RATE", "рассчитывает процентную ставку"],
+          ["IPMT", "считает процентную часть платежа"],
+          ["PPMT", "считает основную часть платежа"]
+        ]
+      },
+      {
+        name: "Информация",
+        icon: "ⓘ",
+        items: [
+          ["ISBLANK", "проверяет, пустая ли ячейка"],
+          ["ISNUMBER", "проверяет, является ли значение числом"],
+          ["ISTEXT", "проверяет, является ли значение текстом"],
+          ["ISERROR", "проверяет наличие ошибки"],
+          ["ISNA", "проверяет ошибку #N/A"],
+          ["ISEVEN", "проверяет, является ли число чётным"],
+          ["ISODD", "проверяет, является ли число нечётным"],
+          ["ISLOGICAL", "проверяет TRUE или FALSE"],
+          ["TYPE", "определяет тип значения"],
+          ["N", "преобразует значение в число"]
+        ]
+      },
+      {
+        name: "Тригонометрия",
+        icon: "△",
+        items: [
+          ["SIN", "вычисляет синус"],
+          ["COS", "вычисляет косинус"],
+          ["TAN", "вычисляет тангенс"],
+          ["ASIN", "вычисляет арксинус"],
+          ["ACOS", "вычисляет арккосинус"],
+          ["ATAN", "вычисляет арктангенс"],
+          ["ATAN2", "определяет угол по координатам"],
+          ["DEGREES", "переводит радианы в градусы"],
+          ["RADIANS", "переводит градусы в радианы"]
+        ]
+      },
+      {
+        name: "Инженерные",
+        icon: "⚙",
+        items: [
+          ["CONVERT", "переводит единицы измерения"],
+          ["GCD", "наибольший общий делитель"],
+          ["LCM", "наименьшее общее кратное"],
+          ["DEC2BIN", "переводит десятичное число в двоичное"],
+          ["BIN2DEC", "переводит двоичное число в десятичное"],
+          ["DEC2HEX", "переводит десятичное число в шестнадцатеричное"],
+          ["HEX2DEC", "переводит шестнадцатеричное число в десятичное"],
+          ["COMPLEX", "создаёт комплексное число"]
+        ]
+      },
+      {
+        name: "Базы данных",
+        icon: "▣",
+        items: [
+          ["DSUM", "сумма по условиям"],
+          ["DCOUNT", "количество числовых значений по условиям"],
+          ["DCOUNTA", "количество непустых значений по условиям"],
+          ["DAVERAGE", "среднее по условиям"],
+          ["DMAX", "максимум по условиям"],
+          ["DMIN", "минимум по условиям"],
+          ["DGET", "получает значение из базы"],
+          ["DPRODUCT", "произведение по условиям"],
+          ["DSTDEV", "стандартное отклонение по условиям"],
+          ["DVAR", "дисперсия по условиям"]
+        ]
+      },
+      {
+        name: "Запросы",
+        icon: "⌘",
+        items: [
+          ["QUERY", "выполняет запрос к данным, похожий на SQL"]
+        ]
+      }
+    ];
+
+    const content = document.getElementById("content");
+    const searchInput = document.getElementById("search");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const resultCount = document.getElementById("resultCount");
+    const empty = document.getElementById("empty");
+    const toast = document.getElementById("toast");
+
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category.name;
+      option.textContent = category.name;
+      categoryFilter.appendChild(option);
+    });
+
+    function render() {
+      const query = searchInput.value.trim().toLowerCase();
+      const selectedCategory = categoryFilter.value;
+
+      content.innerHTML = "";
+      let total = 0;
+
+      categories.forEach(category => {
+        if (
+          selectedCategory !== "all" &&
+          selectedCategory !== category.name
+        ) {
+          return;
+        }
+
+        const filteredItems = category.items.filter(([name, description]) => {
+          return (
+            name.toLowerCase().includes(query) ||
+            description.toLowerCase().includes(query) ||
+            category.name.toLowerCase().includes(query)
+          );
+        });
+
+        if (!filteredItems.length) return;
+
+        total += filteredItems.length;
+
+        const section = document.createElement("section");
+        section.className = "category";
+
+        const title = document.createElement("h2");
+        title.className = "category-title";
+        title.innerHTML = `
+          <span>${category.icon}</span>
+          <span>${category.name}</span>
+          <span class="category-count">(${filteredItems.length})</span>
+        `;
+
+        const grid = document.createElement("div");
+        grid.className = "functions-grid";
+
+        filteredItems.forEach(([name, description]) => {
+          const card = document.createElement("article");
+          card.className = "function-card";
+
+          card.innerHTML = `
+            <span class="function-name" title="Нажмите, чтобы скопировать">
+              ${name}
+            </span>
+            <p class="function-description">${description}</p>
+            <span class="copy-hint">копировать</span>
+          `;
+
+          const functionName = card.querySelector(".function-name");
+
+          functionName.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(name);
+            } catch {
+              const textarea = document.createElement("textarea");
+              textarea.value = name;
+              document.body.appendChild(textarea);
+              textarea.select();
+              document.execCommand("copy");
+              textarea.remove();
+            }
+
+            showToast(`${name} скопирована`);
+          });
+
+          grid.appendChild(card);
+        });
+
+        section.appendChild(title);
+        section.appendChild(grid);
+        content.appendChild(section);
+      });
+
+      resultCount.textContent = total;
+      empty.style.display = total === 0 ? "block" : "none";
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1800);
+    }
+
+    searchInput.addEventListener("input", render);
+    categoryFilter.addEventListener("change", render);
+
+    render();
+  </script>
+</body>
+</html>
