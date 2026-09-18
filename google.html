@@ -1,710 +1,1489 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Google Таблицы — функции</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Мои таблицы</title>
 
-  <style>
-    :root {
-      --bg: #0d1117;
-      --panel: #151b23;
-      --panel-light: #1d2632;
-      --border: #2c3948;
-      --text: #f1f5f9;
-      --muted: #9aa8b8;
-      --green: #35d07f;
-      --green-dark: #1e9d5d;
-      --blue: #48a9ff;
-      --yellow: #ffd166;
-      --shadow: 0 15px 45px rgba(0, 0, 0, 0.25);
-    }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-    * {
-      box-sizing: border-box;
-    }
+:root {
+    --green: #0f9d58;
+    --light-green: #e6f4ea;
+    --border: #dadce0;
+    --text: #202124;
+    --muted: #5f6368;
+    --selected: #d2e3fc;
+    --header: #f8f9fa;
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(53, 208, 127, 0.12), transparent 28rem),
-        radial-gradient(circle at top right, rgba(72, 169, 255, 0.1), transparent 25rem),
-        var(--bg);
-    }
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--text);
+    background: #fff;
+    overflow: hidden;
+}
 
-    .container {
-      width: min(1240px, calc(100% - 32px));
-      margin: 0 auto;
-    }
+button,
+input,
+select {
+    font: inherit;
+}
 
-    header {
-      padding: 42px 0 30px;
-      text-align: center;
-    }
+button {
+    cursor: pointer;
+}
 
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 64px;
-      height: 64px;
-      margin-bottom: 16px;
-      border-radius: 18px;
-      color: #07140d;
-      font-size: 34px;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--green), #9affc4);
-      box-shadow: 0 0 35px rgba(53, 208, 127, 0.35);
-    }
+/* Верхняя часть */
 
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 5vw, 52px);
-      letter-spacing: -1.5px;
-    }
+.topbar {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 20px;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+}
 
-    .subtitle {
-      max-width: 700px;
-      margin: 14px auto 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 16px;
-    }
+.sheets-logo {
+    width: 34px;
+    height: 42px;
+    border-radius: 4px;
+    background: var(--green);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 23px;
+    font-weight: bold;
+    box-shadow: 0 1px 3px #999;
+}
 
-    .toolbar {
-      position: sticky;
-      top: 12px;
-      z-index: 10;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 28px;
-      padding: 14px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: rgba(21, 27, 35, 0.88);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(18px);
-    }
+.file-info {
+    min-width: 220px;
+}
 
-    .search-box {
-      position: relative;
-      flex: 1 1 300px;
-    }
+.file-name {
+    border: none;
+    outline: none;
+    font-size: 18px;
+    width: 250px;
+    color: var(--text);
+    padding: 3px 5px;
+    border-radius: 4px;
+}
 
-    .search-box span {
-      position: absolute;
-      top: 50%;
-      left: 16px;
-      color: var(--muted);
-      font-size: 20px;
-      transform: translateY(-50%);
-    }
+.file-name:hover,
+.file-name:focus {
+    border: 1px solid var(--border);
+}
 
-    #search {
-      width: 100%;
-      padding: 14px 18px 14px 48px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      outline: none;
-      color: var(--text);
-      font-size: 15px;
-      background: #10161d;
-    }
+.save-status {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 5px;
+}
 
-    #search:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(53, 208, 127, 0.12);
-    }
+.top-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-    select {
-      min-width: 210px;
-      padding: 0 16px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      outline: none;
-      color: var(--text);
-      background: #10161d;
-      font-size: 15px;
-      cursor: pointer;
-    }
+.icon-button,
+.share-button,
+.avatar {
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+}
 
-    .stats {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 8px;
-      color: var(--muted);
-      font-size: 14px;
-      white-space: nowrap;
-    }
+.icon-button:hover {
+    background: #f1f3f4;
+}
 
-    .stats b {
-      color: var(--green);
-    }
+.share-button {
+    width: auto;
+    height: 38px;
+    border-radius: 5px;
+    padding: 0 17px;
+    background: #c2e7ff;
+    color: #001d35;
+    font-weight: bold;
+}
 
-    .category {
-      margin: 34px 0 42px;
-    }
+.share-button:hover {
+    background: #a8dcff;
+}
 
-    .category-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0 0 16px;
-      font-size: 25px;
-    }
+.avatar {
+    background: #673ab7;
+    color: white;
+    font-weight: bold;
+}
 
-    .category-title::before {
-      content: "";
-      width: 5px;
-      height: 28px;
-      border-radius: 10px;
-      background: linear-gradient(var(--green), var(--blue));
-    }
+/* Меню */
 
-    .category-count {
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: normal;
-    }
+.menu-bar {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-left: 76px;
+    border-bottom: 1px solid var(--border);
+}
 
-    .functions-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
-      gap: 14px;
-    }
+.menu-item {
+    position: relative;
+    padding: 7px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
 
-    .function-card {
-      position: relative;
-      min-height: 130px;
-      padding: 18px;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: linear-gradient(145deg, var(--panel), #111820);
-      transition: 0.2s ease;
-    }
+.menu-item:hover {
+    background: #f1f3f4;
+}
 
-    .function-card:hover {
-      border-color: var(--green);
-      transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(53, 208, 127, 0.1);
-    }
+.dropdown {
+    display: none;
+    position: absolute;
+    z-index: 20;
+    top: 34px;
+    left: 0;
+    min-width: 230px;
+    padding: 6px 0;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.2);
+}
 
-    .function-name {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 6px 9px;
-      border-radius: 7px;
-      color: #06140c;
-      font-family: Consolas, monospace;
-      font-size: 14px;
-      font-weight: bold;
-      background: var(--green);
-      cursor: pointer;
-      user-select: none;
-    }
+.menu-item.open .dropdown {
+    display: block;
+}
 
-    .function-name:hover {
-      background: #72e9a6;
-    }
+.dropdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 15px;
+    font-size: 14px;
+    white-space: nowrap;
+}
 
-    .function-description {
-      margin: 0;
-      padding-right: 5px;
-      color: #c3cedb;
-      font-size: 14px;
-      line-height: 1.5;
-    }
+.dropdown-row:hover {
+    background: #f1f3f4;
+}
 
-    .copy-hint {
-      position: absolute;
-      right: 14px;
-      bottom: 13px;
-      color: #647486;
-      font-size: 11px;
-    }
+.shortcut {
+    color: var(--muted);
+    margin-left: 30px;
+}
 
-    .empty {
-      display: none;
-      padding: 55px 20px;
-      color: var(--muted);
-      text-align: center;
-      font-size: 18px;
-    }
+/* Панель инструментов */
 
-    footer {
-      margin: 50px 0 30px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      text-align: center;
-      font-size: 13px;
-    }
+.toolbar {
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 14px;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+}
 
-    .toast {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      z-index: 30;
-      padding: 13px 18px;
-      border: 1px solid var(--green);
-      border-radius: 10px;
-      color: white;
-      background: #183526;
-      box-shadow: var(--shadow);
-      opacity: 0;
-      transform: translateY(20px);
-      pointer-events: none;
-      transition: 0.25s ease;
-    }
+.tool-button,
+.tool-select {
+    height: 32px;
+    min-width: 32px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 4px;
+    background: white;
+    color: var(--text);
+}
 
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+.tool-button:hover,
+.tool-select:hover {
+    background: #f1f3f4;
+}
 
-    @media (max-width: 650px) {
-      .container {
-        width: min(100% - 20px, 1240px);
-      }
+.tool-button.active {
+    background: var(--selected);
+}
 
-      header {
-        padding-top: 28px;
-      }
+.tool-select {
+    border: 1px solid transparent;
+}
 
-      .toolbar {
-        top: 6px;
-      }
+.tool-select:focus {
+    outline: none;
+    border-color: #4285f4;
+}
 
-      select {
-        width: 100%;
-        min-height: 46px;
-      }
+.separator {
+    width: 1px;
+    height: 25px;
+    background: var(--border);
+    margin: 0 5px;
+}
 
-      .stats {
-        width: 100%;
-        justify-content: center;
-        padding: 5px;
-      }
+/* Строка формул */
 
-      .functions-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+.formula-area {
+    height: 42px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: white;
+}
+
+.name-box {
+    width: 75px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.fx {
+    width: 40px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    font-weight: bold;
+}
+
+.formula-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    height: 100%;
+    padding: 0 10px;
+}
+
+/* Область таблицы */
+
+.sheet-wrapper {
+    height: calc(100vh - 232px);
+    overflow: auto;
+    position: relative;
+}
+
+.grid {
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: 1200px;
+}
+
+.grid th,
+.grid td {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    height: 28px;
+    min-width: 110px;
+    max-width: 300px;
+    padding: 4px 7px;
+    font-size: 13px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.grid thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    height: 30px;
+    text-align: center;
+    background: var(--header);
+    color: var(--muted);
+    font-weight: normal;
+}
+
+.grid thead th:first-child {
+    left: 0;
+    z-index: 7;
+    width: 48px;
+    min-width: 48px;
+}
+
+.grid tbody th {
+    position: sticky;
+    left: 0;
+    z-index: 4;
+    width: 48px;
+    min-width: 48px;
+    text-align: center;
+    background: var(--header);
+    color: var(--muted);
+    font-weight: normal;
+}
+
+.grid td {
+    background: white;
+    outline: none;
+}
+
+.grid td:focus,
+.grid td.selected {
+    outline: 2px solid #1a73e8;
+    outline-offset: -2px;
+    z-index: 3;
+}
+
+.grid td.bold {
+    font-weight: bold;
+}
+
+.grid td.italic {
+    font-style: italic;
+}
+
+.grid td.underline {
+    text-decoration: underline;
+}
+
+/* Нижняя панель */
+
+.bottom-bar {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 0 14px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+}
+
+.sheet-tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+}
+
+.sheet-tab {
+    min-width: 80px;
+    max-width: 180px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px 4px 0 0;
+    background: transparent;
+    color: var(--muted);
+    white-space: nowrap;
+}
+
+.sheet-tab:hover {
+    background: #f1f3f4;
+}
+
+.sheet-tab.active {
+    color: var(--green);
+    border-bottom: 3px solid var(--green);
+    font-weight: bold;
+}
+
+.add-sheet {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    font-size: 22px;
+}
+
+.add-sheet:hover {
+    background: #f1f3f4;
+}
+
+/* Модальное окно */
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.35);
+}
+
+.modal-overlay.visible {
+    display: flex;
+}
+
+.modal {
+    width: 520px;
+    max-width: calc(100vw - 30px);
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.3);
+    overflow: hidden;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.close-modal {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    color: var(--muted);
+}
+
+.modal-body {
+    padding: 20px 24px;
+}
+
+.invite-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.invite-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    outline: none;
+}
+
+.invite-input:focus {
+    border-color: #1a73e8;
+}
+
+.send-invite {
+    padding: 0 16px;
+    border: none;
+    border-radius: 4px;
+    background: #1a73e8;
+    color: white;
+}
+
+.access-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.link-access {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 18px;
+}
+
+.link-access select {
+    margin-left: auto;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+}
+
+.people-list {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.person {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.person small {
+    color: var(--muted);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 24px;
+    border-top: 1px solid var(--border);
+}
+
+.cancel-button,
+.save-button {
+    padding: 9px 18px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: white;
+}
+
+.save-button {
+    border-color: #1a73e8;
+    background: #1a73e8;
+    color: white;
+}
+
+/* Уведомления */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 75px;
+    transform: translateX(-50%) translateY(20px);
+    padding: 12px 20px;
+    color: white;
+    background: #323232;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: .25s;
+    z-index: 200;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+</style>
 </head>
 
 <body>
-  <header class="container">
-    <div class="logo">ƒ</div>
-    <h1>Функции Google Таблиц</h1>
-    <p class="subtitle">
-      Удобный справочник формул: ищите нужную функцию, выбирайте категорию
-      и нажимайте на название, чтобы скопировать его.
-    </p>
-  </header>
 
-  <main class="container">
-    <section class="toolbar">
-      <div class="search-box">
-        <span>⌕</span>
-        <input
-          id="search"
-          type="search"
-          placeholder="Поиск функции или описания..."
-        >
-      </div>
+<header class="topbar">
+    <div class="sheets-logo">▦</div>
 
-      <select id="categoryFilter">
-        <option value="all">Все категории</option>
-      </select>
-
-      <div class="stats">
-        Найдено: <b id="resultCount">0</b>
-      </div>
-    </section>
-
-    <div id="content"></div>
-
-    <div id="empty" class="empty">
-      Ничего не найдено. Попробуйте изменить поисковый запрос.
+    <div class="file-info">
+        <input id="fileName" class="file-name" value="Моя таблица">
+        <div id="saveStatus" class="save-status">Сохранено на этом устройстве</div>
     </div>
 
-    <footer>
-      Справочник функций Google Таблиц · Нажмите на название функции, чтобы скопировать его
-    </footer>
-  </main>
+    <div class="top-actions">
+        <button class="icon-button" title="Комментарии">💬</button>
+        <button class="icon-button" title="История изменений">🕘</button>
+        <button id="shareButton" class="share-button">Поделиться</button>
+        <button class="avatar">А</button>
+    </div>
+</header>
 
-  <div id="toast" class="toast">Функция скопирована</div>
+<nav class="menu-bar">
+    <div class="menu-item">
+        Файл
+        <div class="dropdown">
+            <div class="dropdown-row" id="newFile">Новая таблица <span class="shortcut">Ctrl+N</span></div>
+            <div class="dropdown-row" id="downloadCsv">Скачать CSV</div>
+            <div class="dropdown-row" id="saveCopy">Создать копию</div>
+            <div class="dropdown-row" id="printTable">Печать</div>
+        </div>
+    </div>
 
-  <script>
-    const categories = [
-      {
-        name: "Математика",
-        icon: "∑",
-        items: [
-          ["SUM", "складывает числа"],
-          ["AVERAGE", "считает среднее значение"],
-          ["MIN", "находит минимальное значение"],
-          ["MAX", "находит максимальное значение"],
-          ["COUNT", "считает ячейки с числами"],
-          ["COUNTA", "считает непустые ячейки"],
-          ["COUNTBLANK", "считает пустые ячейки"],
-          ["ROUND", "округляет число"],
-          ["ROUNDUP", "округляет вверх"],
-          ["ROUNDDOWN", "округляет вниз"],
-          ["ABS", "возвращает модуль числа"],
-          ["POWER", "возводит число в степень"],
-          ["SQRT", "вычисляет квадратный корень"],
-          ["MOD", "возвращает остаток от деления"],
-          ["PRODUCT", "перемножает числа"],
-          ["SUMPRODUCT", "перемножает элементы и складывает результаты"],
-          ["RAND", "создаёт случайное число от 0 до 1"],
-          ["RANDBETWEEN", "создаёт случайное целое число"],
-          ["PI", "возвращает число π"]
-        ]
-      },
-      {
-        name: "Логика",
-        icon: "◇",
-        items: [
-          ["IF", "проверяет условие"],
-          ["IFS", "проверяет несколько условий"],
-          ["AND", "проверяет, выполнены ли все условия"],
-          ["OR", "проверяет, выполнено ли хотя бы одно условие"],
-          ["NOT", "меняет TRUE на FALSE и наоборот"],
-          ["IFERROR", "заменяет ошибку указанным значением"],
-          ["IFNA", "обрабатывает ошибку #N/A"],
-          ["TRUE", "возвращает TRUE"],
-          ["FALSE", "возвращает FALSE"]
-        ]
-      },
-      {
-        name: "Поиск и ссылки",
-        icon: "⌕",
-        items: [
-          ["VLOOKUP", "ищет значение по вертикали"],
-          ["HLOOKUP", "ищет значение по горизонтали"],
-          ["XLOOKUP", "современный поиск значения"],
-          ["LOOKUP", "выполняет поиск"],
-          ["INDEX", "возвращает значение по позиции"],
-          ["MATCH", "находит позицию значения"],
-          ["FILTER", "фильтрует данные"],
-          ["SORT", "сортирует данные"],
-          ["SORTN", "возвращает определённое количество результатов"],
-          ["UNIQUE", "убирает повторяющиеся значения"]
-        ]
-      },
-      {
-        name: "Текст",
-        icon: "T",
-        items: [
-          ["LEFT", "берёт символы слева"],
-          ["RIGHT", "берёт символы справа"],
-          ["MID", "берёт часть текста из середины"],
-          ["LEN", "считает количество символов"],
-          ["LOWER", "переводит текст в нижний регистр"],
-          ["UPPER", "переводит текст в верхний регистр"],
-          ["PROPER", "делает первые буквы слов заглавными"],
-          ["TRIM", "убирает лишние пробелы"],
-          ["SPLIT", "разделяет текст на ячейки"],
-          ["JOIN", "объединяет значения с разделителем"],
-          ["CONCATENATE", "объединяет текст"],
-          ["TEXTJOIN", "объединяет несколько значений с разделителем"],
-          ["CONCAT", "объединяет два значения"],
-          ["SUBSTITUTE", "заменяет один текст другим"],
-          ["REPLACE", "заменяет часть текста по позиции"],
-          ["SEARCH", "ищет текст внутри текста"],
-          ["FIND", "находит позицию текста"],
-          ["EXACT", "сравнивает два текста"],
-          ["TEXT", "форматирует число как текст"],
-          ["VALUE", "превращает текст в число"]
-        ]
-      },
-      {
-        name: "Дата и время",
-        icon: "◷",
-        items: [
-          ["TODAY", "возвращает сегодняшнюю дату"],
-          ["NOW", "возвращает текущую дату и время"],
-          ["DATE", "создаёт дату"],
-          ["DAY", "получает день"],
-          ["MONTH", "получает месяц"],
-          ["YEAR", "получает год"],
-          ["HOUR", "получает часы"],
-          ["MINUTE", "получает минуты"],
-          ["SECOND", "получает секунды"],
-          ["WEEKDAY", "определяет день недели"],
-          ["WEEKNUM", "возвращает номер недели"],
-          ["EDATE", "изменяет дату на указанное количество месяцев"],
-          ["EOMONTH", "возвращает последний день месяца"],
-          ["DATEDIF", "считает разницу между двумя датами"],
-          ["DAYS", "считает количество дней между датами"],
-          ["NETWORKDAYS", "считает количество рабочих дней"],
-          ["WORKDAY", "рассчитывает рабочую дату"]
-        ]
-      },
-      {
-        name: "Условия и диапазоны",
-        icon: "▦",
-        items: [
-          ["SUMIF", "сумма по одному условию"],
-          ["SUMIFS", "сумма по нескольким условиям"],
-          ["COUNTIF", "количество по одному условию"],
-          ["COUNTIFS", "количество по нескольким условиям"],
-          ["AVERAGEIF", "среднее по одному условию"],
-          ["AVERAGEIFS", "среднее по нескольким условиям"],
-          ["MAXIFS", "максимальное значение по условиям"],
-          ["MINIFS", "минимальное значение по условиям"]
-        ]
-      },
-      {
-        name: "Статистика",
-        icon: "▥",
-        items: [
-          ["MEDIAN", "находит медиану"],
-          ["MODE", "находит наиболее часто встречающееся значение"],
-          ["STDEV", "считает стандартное отклонение"],
-          ["STDEVP", "считает стандартное отклонение всей совокупности"],
-          ["VAR", "считает дисперсию"],
-          ["VARP", "считает дисперсию всей совокупности"],
-          ["PERCENTILE", "находит процентиль"],
-          ["QUARTILE", "находит квартиль"],
-          ["RANK", "определяет ранг числа"],
-          ["LARGE", "возвращает N-е наибольшее значение"],
-          ["SMALL", "возвращает N-е наименьшее значение"],
-          ["CORREL", "вычисляет корреляцию"],
-          ["COVAR", "вычисляет ковариацию"]
-        ]
-      },
-      {
-        name: "Массивы",
-        icon: "▤",
-        items: [
-          ["ARRAYFORMULA", "применяет формулу сразу к диапазону"],
-          ["FILTER", "создаёт отфильтрованный массив"],
-          ["SORT", "сортирует массив"],
-          ["UNIQUE", "убирает дубликаты"],
-          ["TRANSPOSE", "меняет строки и столбцы местами"],
-          ["SEQUENCE", "создаёт последовательность чисел"],
-          ["TOCOL", "превращает диапазон в один столбец"],
-          ["TOROW", "превращает диапазон в одну строку"],
-          ["CHOOSECOLS", "выбирает нужные столбцы"],
-          ["CHOOSEROWS", "выбирает нужные строки"],
-          ["VSTACK", "объединяет диапазоны вертикально"],
-          ["HSTACK", "объединяет диапазоны горизонтально"]
-        ]
-      },
-      {
-        name: "Импорт и интернет",
-        icon: "↗",
-        items: [
-          ["IMPORTRANGE", "получает данные из другой Google Таблицы"],
-          ["IMPORTHTML", "импортирует таблицы или списки с сайта"],
-          ["IMPORTXML", "получает данные с сайта через XPath"],
-          ["IMPORTDATA", "импортирует CSV или TSV"],
-          ["IMAGE", "показывает изображение по ссылке"],
-          ["HYPERLINK", "создаёт гиперссылку"]
-        ]
-      },
-      {
-        name: "Финансы",
-        icon: "₽",
-        items: [
-          ["PMT", "рассчитывает платёж по кредиту"],
-          ["PV", "рассчитывает текущую стоимость"],
-          ["FV", "рассчитывает будущую стоимость"],
-          ["NPV", "считает чистую приведённую стоимость"],
-          ["IRR", "считает внутреннюю норму доходности"],
-          ["RATE", "рассчитывает процентную ставку"],
-          ["IPMT", "считает процентную часть платежа"],
-          ["PPMT", "считает основную часть платежа"]
-        ]
-      },
-      {
-        name: "Информация",
-        icon: "ⓘ",
-        items: [
-          ["ISBLANK", "проверяет, пустая ли ячейка"],
-          ["ISNUMBER", "проверяет, является ли значение числом"],
-          ["ISTEXT", "проверяет, является ли значение текстом"],
-          ["ISERROR", "проверяет наличие ошибки"],
-          ["ISNA", "проверяет ошибку #N/A"],
-          ["ISEVEN", "проверяет, является ли число чётным"],
-          ["ISODD", "проверяет, является ли число нечётным"],
-          ["ISLOGICAL", "проверяет TRUE или FALSE"],
-          ["TYPE", "определяет тип значения"],
-          ["N", "преобразует значение в число"]
-        ]
-      },
-      {
-        name: "Тригонометрия",
-        icon: "△",
-        items: [
-          ["SIN", "вычисляет синус"],
-          ["COS", "вычисляет косинус"],
-          ["TAN", "вычисляет тангенс"],
-          ["ASIN", "вычисляет арксинус"],
-          ["ACOS", "вычисляет арккосинус"],
-          ["ATAN", "вычисляет арктангенс"],
-          ["ATAN2", "определяет угол по координатам"],
-          ["DEGREES", "переводит радианы в градусы"],
-          ["RADIANS", "переводит градусы в радианы"]
-        ]
-      },
-      {
-        name: "Инженерные",
-        icon: "⚙",
-        items: [
-          ["CONVERT", "переводит единицы измерения"],
-          ["GCD", "наибольший общий делитель"],
-          ["LCM", "наименьшее общее кратное"],
-          ["DEC2BIN", "переводит десятичное число в двоичное"],
-          ["BIN2DEC", "переводит двоичное число в десятичное"],
-          ["DEC2HEX", "переводит десятичное число в шестнадцатеричное"],
-          ["HEX2DEC", "переводит шестнадцатеричное число в десятичное"],
-          ["COMPLEX", "создаёт комплексное число"]
-        ]
-      },
-      {
-        name: "Базы данных",
-        icon: "▣",
-        items: [
-          ["DSUM", "сумма по условиям"],
-          ["DCOUNT", "количество числовых значений по условиям"],
-          ["DCOUNTA", "количество непустых значений по условиям"],
-          ["DAVERAGE", "среднее по условиям"],
-          ["DMAX", "максимум по условиям"],
-          ["DMIN", "минимум по условиям"],
-          ["DGET", "получает значение из базы"],
-          ["DPRODUCT", "произведение по условиям"],
-          ["DSTDEV", "стандартное отклонение по условиям"],
-          ["DVAR", "дисперсия по условиям"]
-        ]
-      },
-      {
-        name: "Запросы",
-        icon: "⌘",
-        items: [
-          ["QUERY", "выполняет запрос к данным, похожий на SQL"]
-        ]
-      }
-    ];
+    <div class="menu-item">
+        Правка
+        <div class="dropdown">
+            <div class="dropdown-row" id="undoAction">Отменить <span class="shortcut">Ctrl+Z</span></div>
+            <div class="dropdown-row" id="redoAction">Повторить <span class="shortcut">Ctrl+Y</span></div>
+            <div class="dropdown-row" id="clearCell">Удалить содержимое</div>
+        </div>
+    </div>
 
-    const content = document.getElementById("content");
-    const searchInput = document.getElementById("search");
-    const categoryFilter = document.getElementById("categoryFilter");
-    const resultCount = document.getElementById("resultCount");
-    const empty = document.getElementById("empty");
-    const toast = document.getElementById("toast");
+    <div class="menu-item">
+        Вид
+        <div class="dropdown">
+            <div class="dropdown-row" id="toggleFormula">Показать строку формул</div>
+            <div class="dropdown-row" id="toggleGrid">Показать сетку</div>
+        </div>
+    </div>
 
-    categories.forEach(category => {
-      const option = document.createElement("option");
-      option.value = category.name;
-      option.textContent = category.name;
-      categoryFilter.appendChild(option);
-    });
+    <div class="menu-item">
+        Вставка
+        <div class="dropdown">
+            <div class="dropdown-row" id="insertRow">Добавить строку</div>
+            <div class="dropdown-row" id="insertColumn">Добавить столбец</div>
+            <div class="dropdown-row" id="insertSheet">Добавить лист</div>
+        </div>
+    </div>
 
-    function render() {
-      const query = searchInput.value.trim().toLowerCase();
-      const selectedCategory = categoryFilter.value;
+    <div class="menu-item">
+        Формат
+        <div class="dropdown">
+            <div class="dropdown-row" id="formatBold">Жирный текст</div>
+            <div class="dropdown-row" id="formatItalic">Курсив</div>
+            <div class="dropdown-row" id="formatUnderline">Подчёркивание</div>
+        </div>
+    </div>
 
-      content.innerHTML = "";
-      let total = 0;
+    <div class="menu-item">
+        Инструменты
+        <div class="dropdown">
+            <div class="dropdown-row" id="showHelp">Справка</div>
+        </div>
+    </div>
+</nav>
 
-      categories.forEach(category => {
-        if (
-          selectedCategory !== "all" &&
-          selectedCategory !== category.name
-        ) {
-          return;
+<section class="toolbar">
+    <button class="tool-button" id="undoButton" title="Отменить">↶</button>
+    <button class="tool-button" id="redoButton" title="Повторить">↷</button>
+
+    <div class="separator"></div>
+
+    <select id="fontSelect" class="tool-select">
+        <option>Arial</option>
+        <option>Georgia</option>
+        <option>Verdana</option>
+        <option>Courier New</option>
+    </select>
+
+    <select id="fontSizeSelect" class="tool-select">
+        <option>10</option>
+        <option>12</option>
+        <option selected>13</option>
+        <option>14</option>
+        <option>16</option>
+        <option>18</option>
+        <option>24</option>
+    </select>
+
+    <div class="separator"></div>
+
+    <button class="tool-button" id="boldButton"><b>B</b></button>
+    <button class="tool-button" id="italicButton"><i>I</i></button>
+    <button class="tool-button" id="underlineButton"><u>U</u></button>
+
+    <div class="separator"></div>
+
+    <button class="tool-button" id="alignLeft">☰</button>
+    <button class="tool-button" id="alignCenter">≡</button>
+    <button class="tool-button" id="alignRight">☷</button>
+
+    <div class="separator"></div>
+
+    <button class="tool-button" id="textColorButton" title="Цвет текста">A</button>
+    <input id="textColor" type="color" value="#202124" hidden>
+
+    <button class="tool-button" id="fillColorButton" title="Цвет заливки">▰</button>
+    <input id="fillColor" type="color" value="#ffffff" hidden>
+
+    <div class="separator"></div>
+
+    <button class="tool-button" id="clearFormat">⌫</button>
+</section>
+
+<section class="formula-area">
+    <div id="nameBox" class="name-box">A1</div>
+    <div class="fx">fx</div>
+    <input id="formulaInput" class="formula-input" placeholder="Введите значение или формулу">
+</section>
+
+<main id="sheetWrapper" class="sheet-wrapper">
+    <table id="grid" class="grid"></table>
+</main>
+
+<footer class="bottom-bar">
+    <button class="add-sheet" id="addSheetButton">＋</button>
+    <div id="sheetTabs" class="sheet-tabs"></div>
+</footer>
+
+<div id="shareModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Поделиться таблицей</h2>
+            <button class="close-modal" id="closeShare">×</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="invite-row">
+                <input id="emailInput" class="invite-input" placeholder="Добавьте людей или группы по email">
+                <button id="sendInvite" class="send-invite">Отправить</button>
+            </div>
+
+            <div class="access-title">Общий доступ</div>
+
+            <div class="link-access">
+                <span>🔗</span>
+                <div>
+                    <b>Кто угодно по ссылке</b><br>
+                    <small>Выберите уровень доступа</small>
+                </div>
+
+                <select id="linkRole">
+                    <option value="view">Просмотрщик</option>
+                    <option value="comment">Комментатор</option>
+                    <option value="edit">Редактор</option>
+                </select>
+            </div>
+
+            <div class="access-title">Пользователи с доступом</div>
+            <div id="peopleList" class="people-list">
+                <div class="person">
+                    <span>Вы <small>владелец</small></span>
+                    <b>Владелец</b>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button id="cancelShare" class="cancel-button">Отмена</button>
+            <button id="saveShare" class="save-button">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const ROWS = 30;
+const COLS = 15;
+
+let sheets = JSON.parse(localStorage.getItem("miniSheetsData")) || [
+    {
+        name: "Лист1",
+        cells: {}
+    }
+];
+
+let activeSheet = Number(localStorage.getItem("activeSheetIndex")) || 0;
+let selectedCell = { row: 0, col: 0 };
+let history = [];
+let future = [];
+
+const grid = document.getElementById("grid");
+const sheetTabs = document.getElementById("sheetTabs");
+const formulaInput = document.getElementById("formulaInput");
+const nameBox = document.getElementById("nameBox");
+const saveStatus = document.getElementById("saveStatus");
+const sheetWrapper = document.getElementById("sheetWrapper");
+const toast = document.getElementById("toast");
+
+function columnName(index) {
+    let name = "";
+    index++;
+
+    while (index > 0) {
+        const remainder = (index - 1) % 26;
+        name = String.fromCharCode(65 + remainder) + name;
+        index = Math.floor((index - 1) / 26);
+    }
+
+    return name;
+}
+
+function cellAddress(row, col) {
+    return columnName(col) + (row + 1);
+}
+
+function currentSheet() {
+    return sheets[activeSheet];
+}
+
+function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
+}
+
+function saveData() {
+    localStorage.setItem("miniSheetsData", JSON.stringify(sheets));
+    localStorage.setItem("activeSheetIndex", activeSheet);
+    saveStatus.textContent = "Сохранено на этом устройстве";
+
+    setTimeout(() => {
+        saveStatus.textContent = "Изменения сохранены";
+    }, 500);
+}
+
+function makeSnapshot() {
+    history.push(JSON.stringify(sheets));
+    if (history.length > 40) history.shift();
+    future = [];
+}
+
+function cellData(row, col) {
+    const address = cellAddress(row, col);
+    const data = currentSheet().cells[address];
+
+    if (!data) {
+        return {
+            value: "",
+            style: {}
+        };
+    }
+
+    return data;
+}
+
+function getRawValue(address) {
+    const data = currentSheet().cells[address];
+    return data ? data.value : "";
+}
+
+function evaluateFormula(value) {
+    if (typeof value !== "string" || !value.startsWith("=")) {
+        return value;
+    }
+
+    let formula = value.substring(1).trim();
+
+    const sumMatch = formula.match(/^SUM$([A-Z]+\d+):([A-Z]+\d+)$$/i);
+
+    if (sumMatch) {
+        const start = parseAddress(sumMatch[1]);
+        const end = parseAddress(sumMatch[2]);
+
+        let sum = 0;
+
+        for (let r = start.row; r <= end.row; r++) {
+            for (let c = start.col; c <= end.col; c++) {
+                const raw = getRawValue(cellAddress(r, c));
+                const number = Number(evaluateFormula(raw));
+                if (!isNaN(number)) sum += number;
+            }
         }
 
-        const filteredItems = category.items.filter(([name, description]) => {
-          return (
-            name.toLowerCase().includes(query) ||
-            description.toLowerCase().includes(query) ||
-            category.name.toLowerCase().includes(query)
-          );
+        return sum;
+    }
+
+    const arithmetic = formula.replace(
+        /([A-Z]+)(\d+)/gi,
+        (_, letters, number) => {
+            const address = letters.toUpperCase() + number;
+            const raw = getRawValue(address);
+            const result = evaluateFormula(raw);
+            return Number(result) || 0;
+        }
+    );
+
+    if (/^[\d\s+\-*/().]+$/.test(arithmetic)) {
+        try {
+            return Function('"use strict"; return (' + arithmetic + ')')();
+        } catch {
+            return "#ОШИБКА";
+        }
+    }
+
+    return value;
+}
+
+function parseAddress(address) {
+    const match = address.match(/^([A-Z]+)(\d+)$/i);
+
+    if (!match) {
+        return { row: 0, col: 0 };
+    }
+
+    let col = 0;
+
+    for (const char of match[1].toUpperCase()) {
+        col = col * 26 + char.charCodeAt(0) - 64;
+    }
+
+    return {
+        row: Number(match[2]) - 1,
+        col: col - 1
+    };
+}
+
+function renderGrid() {
+    grid.innerHTML = "";
+
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+
+    const corner = document.createElement("th");
+    corner.textContent = "";
+    headerRow.appendChild(corner);
+
+    for (let c = 0; c < COLS; c++) {
+        const th = document.createElement("th");
+        th.textContent = columnName(c);
+        headerRow.appendChild(th);
+    }
+
+    thead.appendChild(headerRow);
+    grid.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+
+    for (let r = 0; r < ROWS; r++) {
+        const tr = document.createElement("tr");
+
+        const rowHeader = document.createElement("th");
+        rowHeader.textContent = r + 1;
+        tr.appendChild(rowHeader);
+
+        for (let c = 0; c < COLS; c++) {
+            const address = cellAddress(r, c);
+            const data = cellData(r, c);
+            const td = document.createElement("td");
+
+            td.contentEditable = "true";
+            td.dataset.row = r;
+            td.dataset.col = c;
+            td.dataset.address = address;
+
+            td.textContent = evaluateFormula(data.value);
+
+            applyStyle(td, data.style);
+
+            td.addEventListener("focus", () => {
+                selectCell(r, c);
+            });
+
+            td.addEventListener("click", () => {
+                selectCell(r, c);
+            });
+
+            td.addEventListener("input", () => {
+                makeSnapshot();
+
+                if (!currentSheet().cells[address]) {
+                    currentSheet().cells[address] = {
+                        value: "",
+                        style: {}
+                    };
+                }
+
+                currentSheet().cells[address].value = td.textContent;
+                formulaInput.value = td.textContent;
+
+                saveData();
+            });
+
+            td.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+
+                    const next = document.querySelector(
+                        `td[data-row="${r + 1}"][data-col="${c}"]`
+                    );
+
+                    if (next) next.focus();
+                }
+
+                if (event.key === "Tab") {
+                    event.preventDefault();
+
+                    const next = document.querySelector(
+                        `td[data-row="${r}"][data-col="${c + 1}"]`
+                    );
+
+                    if (next) next.focus();
+                }
+            });
+
+            tr.appendChild(td);
+        }
+
+        tbody.appendChild(tr);
+    }
+
+    grid.appendChild(tbody);
+    selectCell(selectedCell.row, selectedCell.col);
+}
+
+function applyStyle(element, style = {}) {
+    if (style.fontFamily) element.style.fontFamily = style.fontFamily;
+    if (style.fontSize) element.style.fontSize = style.fontSize + "px";
+    if (style.color) element.style.color = style.color;
+    if (style.background) element.style.background = style.background;
+    if (style.textAlign) element.style.textAlign = style.textAlign;
+
+    element.classList.toggle("bold", !!style.bold);
+    element.classList.toggle("italic", !!style.italic);
+    element.classList.toggle("underline", !!style.underline);
+}
+
+function selectCell(row, col) {
+    selectedCell = { row, col };
+
+    document.querySelectorAll(".grid td.selected")
+        .forEach(cell => cell.classList.remove("selected"));
+
+    const cell = document.querySelector(
+        `td[data-row="${row}"][data-col="${col}"]`
+    );
+
+    if (!cell) return;
+
+    cell.classList.add("selected");
+    nameBox.textContent = cellAddress(row, col);
+
+    const address = cellAddress(row, col);
+    formulaInput.value = getRawValue(address);
+}
+
+function getSelectedCellElement() {
+    return document.querySelector(
+        `td[data-row="${selectedCell.row}"][data-col="${selectedCell.col}"]`
+    );
+}
+
+function updateSelectedStyle(property, value) {
+    const address = cellAddress(selectedCell.row, selectedCell.col);
+
+    makeSnapshot();
+
+    if (!currentSheet().cells[address]) {
+        currentSheet().cells[address] = {
+            value: "",
+            style: {}
+        };
+    }
+
+    if (!currentSheet().cells[address].style) {
+        currentSheet().cells[address].style = {};
+    }
+
+    currentSheet().cells[address].style[property] = value;
+
+    renderGrid();
+    saveData();
+
+    const cell = getSelectedCellElement();
+    if (cell) cell.focus();
+}
+
+function toggleStyle(property) {
+    const address = cellAddress(selectedCell.row, selectedCell.col);
+    const data = cellData(selectedCell.row, selectedCell.col);
+    const current = !!data.style[property];
+
+    updateSelectedStyle(property, !current);
+}
+
+function setAlignment(value) {
+    updateSelectedStyle("textAlign", value);
+}
+
+function setFormulaValue(value) {
+    const address = cellAddress(selectedCell.row, selectedCell.col);
+
+    makeSnapshot();
+
+    if (!currentSheet().cells[address]) {
+        currentSheet().cells[address] = {
+            value: "",
+            style: {}
+        };
+    }
+
+    currentSheet().cells[address].value = value;
+
+    renderGrid();
+    saveData();
+}
+
+function renderTabs() {
+    sheetTabs.innerHTML = "";
+
+    sheets.forEach((sheet, index) => {
+        const tab = document.createElement("button");
+        tab.className = "sheet-tab" + (index === activeSheet ? " active" : "");
+        tab.textContent = sheet.name;
+
+        tab.addEventListener("click", () => {
+            activeSheet = index;
+            selectedCell = { row: 0, col: 0 };
+            renderTabs();
+            renderGrid();
+            saveData();
         });
 
-        if (!filteredItems.length) return;
+        tab.addEventListener("dblclick", () => {
+            const newName = prompt("Введите новое название листа:", sheet.name);
 
-        total += filteredItems.length;
-
-        const section = document.createElement("section");
-        section.className = "category";
-
-        const title = document.createElement("h2");
-        title.className = "category-title";
-        title.innerHTML = `
-          <span>${category.icon}</span>
-          <span>${category.name}</span>
-          <span class="category-count">(${filteredItems.length})</span>
-        `;
-
-        const grid = document.createElement("div");
-        grid.className = "functions-grid";
-
-        filteredItems.forEach(([name, description]) => {
-          const card = document.createElement("article");
-          card.className = "function-card";
-
-          card.innerHTML = `
-            <span class="function-name" title="Нажмите, чтобы скопировать">
-              ${name}
-            </span>
-            <p class="function-description">${description}</p>
-            <span class="copy-hint">копировать</span>
-          `;
-
-          const functionName = card.querySelector(".function-name");
-
-          functionName.addEventListener("click", async () => {
-            try {
-              await navigator.clipboard.writeText(name);
-            } catch {
-              const textarea = document.createElement("textarea");
-              textarea.value = name;
-              document.body.appendChild(textarea);
-              textarea.select();
-              document.execCommand("copy");
-              textarea.remove();
+            if (newName && newName.trim()) {
+                sheet.name = newName.trim();
+                renderTabs();
+                saveData();
             }
-
-            showToast(`${name} скопирована`);
-          });
-
-          grid.appendChild(card);
         });
 
-        section.appendChild(title);
-        section.appendChild(grid);
-        content.appendChild(section);
-      });
+        sheetTabs.appendChild(tab);
+    });
+}
 
-      resultCount.textContent = total;
-      empty.style.display = total === 0 ? "block" : "none";
+function addSheet() {
+    makeSnapshot();
+
+    sheets.push({
+        name: "Лист" + (sheets.length + 1),
+        cells: {}
+    });
+
+    activeSheet = sheets.length - 1;
+    selectedCell = { row: 0, col: 0 };
+
+    renderTabs();
+    renderGrid();
+    saveData();
+    showToast("Новый лист добавлен");
+}
+
+function deleteSelectedCell() {
+    const address = cellAddress(selectedCell.row, selectedCell.col);
+
+    makeSnapshot();
+    delete currentSheet().cells[address];
+
+    renderGrid();
+    saveData();
+}
+
+function undo() {
+    if (!history.length) {
+        showToast("Нечего отменять");
+        return;
     }
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
+    future.push(JSON.stringify(sheets));
+    sheets = JSON.parse(history.pop());
 
-      clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 1800);
+    activeSheet = Math.min(activeSheet, sheets.length - 1);
+    renderTabs();
+    renderGrid();
+    saveData();
+}
+
+function redo() {
+    if (!future.length) {
+        showToast("Нечего повторять");
+        return;
     }
 
-    searchInput.addEventListener("input", render);
-    categoryFilter.addEventListener("change", render);
+    history.push(JSON.stringify(sheets));
+    sheets = JSON.parse(future.pop());
 
-    render();
-  </script>
+    activeSheet = Math.min(activeSheet, sheets.length - 1);
+    renderTabs();
+    renderGrid();
+    saveData();
+}
+
+function downloadCSV() {
+    const rows = [];
+
+    for (let r = 0; r < ROWS; r++) {
+        const row = [];
+
+        for (let c = 0; c < COLS; c++) {
+            const address = cellAddress(r, c);
+            const value = evaluateFormula(getRawValue(address));
+            row.push(String(value).replaceAll('"', '""'));
+        }
+
+        rows.push(row.map(value => `"${value}"`).join(";"));
+    }
+
+    const blob = new Blob(["\uFEFF" + rows.join("\n")], {
+        type: "text/csv;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = (document.getElementById("fileName").value || "таблица") + ".csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+    showToast("CSV-файл скачан");
+}
+
+function createCopy() {
+    const copy = JSON.parse(JSON.stringify(currentSheet()));
+    copy.name = copy.name + " — копия";
+
+    sheets.push(copy);
+    activeSheet = sheets.length - 1;
+
+    renderTabs();
+    renderGrid();
+    saveData();
+    showToast("Копия листа создана");
+}
+
+function addRow() {
+    showToast("Новая строка будет доступна после расширения таблицы");
+}
+
+function addColumn() {
+    showToast("Новый столбец будет доступен после расширения таблицы");
+}
+
+/* Меню */
+
+document.querySelectorAll(".menu-item").forEach(item => {
+    item.addEventListener("click", event => {
+        event.stopPropagation();
+
+        document.querySelectorAll(".menu-item").forEach(other => {
+            if (other !== item) other.classList.remove("open");
+        });
+
+        item.classList.toggle("open");
+    });
+});
+
+document.addEventListener("click", () => {
+    document.querySelectorAll(".menu-item")
+        .forEach(item => item.classList.remove("open"));
+});
+
+/* Кнопки */
+
+document.getElementById("addSheetButton").addEventListener("click", addSheet);
+document.getElementById("insertSheet").addEventListener("click", addSheet);
+document.getElementById("downloadCsv").addEventListener("click", downloadCSV);
+document.getElementById("saveCopy").addEventListener("click", createCopy);
+document.getElementById("newFile").addEventListener("click", () => {
+    if (confirm("Создать новую пустую таблицу?")) {
+        sheets = [{ name: "Лист1", cells: {} }];
+        activeSheet = 0;
+        selectedCell = { row: 0, col: 0 };
+        history = [];
+        future = [];
+        renderTabs();
+        renderGrid();
+        saveData();
+    }
+});
+
+document.getElementById("printTable").addEventListener("click", () => {
+    window.print();
+});
+
+document.getElementById("undoButton").addEventListener("click", undo);
+document.getElementById("redoButton").addEventListener("click", redo);
+document.getElementById("undoAction").addEventListener("click", undo);
+document.getElementById("redoAction").addEventListener("click", redo);
+document.getElementById("clearCell").addEventListener("click", deleteSelectedCell);
+
+document.getElementById("boldButton").addEventListener("click", () => {
+    toggleStyle("bold");
+});
+
+document.getElementById("italicButton").addEventListener("click", () => {
+    toggleStyle("italic");
+});
+
+document.getElementById("underlineButton").addEventListener("click", () => {
+    toggleStyle("underline");
+});
+
+document.getElementById("formatBold").addEventListener("click", () => {
+    toggleStyle("bold");
+});
+
+document.getElementById("formatItalic").addEventListener("click", () => {
+    toggleStyle("italic");
+});
+
+document.getElementById("formatUnderline").addEventListener("click", () => {
+    toggleStyle("underline");
+});
+
+document.getElementById("alignLeft").addEventListener("click", () => {
+    setAlignment("left");
+});
+
+document.getElementById("alignCenter").addEventListener("click", () => {
+    setAlignment("center");
+});
+
+document.getElementById("alignRight").addEventListener("click", () => {
+    setAlignment("right");
+});
+
+document.getElementById("fontSelect").addEventListener("change", event => {
+    updateSelectedStyle("fontFamily", event.target.value);
+});
+
+document.getElementById("fontSizeSelect").addEventListener("change", event => {
+    updateSelectedStyle("fontSize", Number(event.target.value));
+});
+
+document.getElementById("textColorButton").addEventListener("click", () => {
+    document.getElementById("textColor").click();
+});
+
+document.getElementById("textColor").addEventListener("input", event => {
+    updateSelectedStyle("color", event.target.value);
+});
+
+document.getElementById("fillColorButton").addEventListener("click", () => {
+    document.getElementById("fillColor").click();
+});
+
+document.getElementById("fillColor").addEventListener("input", event => {
+    updateSelectedStyle("background", event.target.value);
+});
+
+document.getElementById("clearFormat").addEventListener("click", () => {
+    const address = cellAddress(selectedCell.row, selectedCell.col);
+
+    makeSnapshot();
+
+    if (currentSheet().cells[address]) {
+        currentSheet().cells[address].style = {};
+    }
+
+    renderGrid();
+    saveData();
+});
+
+document.getElementById("insertRow").addEventListener("click", addRow);
+document.getElementById("insertColumn").addEventListener("click", addColumn);
+
+document.getElementById("toggleGrid").addEventListener("click", () => {
+    grid.classList.toggle("no-grid");
+
+    document.querySelectorAll(".grid td, .grid th").forEach(cell => {
+        cell.style.borderColor = grid.classList.contains("no-grid")
+            ? "transparent"
+            : "var(--border)";
+    });
+});
+
+document.getElementById("toggleFormula").addEventListener("click", () => {
+    const area = document.querySelector(".formula-area");
+    area.style.display = area.style.display === "none" ? "flex" : "none";
+});
+
+document.getElementById("showHelp").addEventListener("click", () => {
+    alert(
+        "Подсказки:\n\n" +
+        "• Дважды нажмите на название листа, чтобы переименовать его.\n" +
+        "• Введите формулу, например =SUM(A1:A3).\n" +
+        "• Используйте =A1+B1 для простых вычислений.\n" +
+        "• Изменения автоматически сохраняются в браузере."
+    );
+});
+
+formulaInput.addEventListener("change", () => {
+    setFormulaValue(formulaInput.value);
+});
+
+formulaInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        setFormulaValue(formulaInput.value);
+        getSelectedCellElement()?.focus();
+    }
+});
+
+document.getElementById("fileName").addEventListener("change", event => {
+    localStorage.setItem("miniSheetsFileName", event.target.value);
+    showToast("Название таблицы сохранено");
+});
+
+/* Горячие клавиши */
+
+document.addEventListener("keydown", event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        undo();
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        redo();
+    }
+
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
+        event.preventDefault();
+        toggleStyle("bold");
+    }
+
+    if (event.key === "Delete" && document.activeElement.tagName === "TD") {
+        deleteSelectedCell();
+    }
+});
+
+/* Окно «Поделиться» */
+
+const shareModal = document.getElementById("shareModal");
+const emailInput = document.getElementById("emailInput");
+const peopleList = document.getElementById("peopleList");
+
+document.getElementById("shareButton").addEventListener("click", () => {
+    shareModal.classList.add("visible");
+});
+
+document.getElementById("closeShare").addEventListener("click", () => {
+    shareModal.classList.remove("visible");
+});
+
+document.getElementById("cancelShare").addEventListener("click", () => {
+    shareModal.classList.remove("visible");
+});
+
+document.getElementById("saveShare").addEventListener("click", () => {
+    shareModal.classList.remove("visible");
+    showToast("Настройки доступа сохранены");
+});
+
+document.getElementById("sendInvite").addEventListener("click", () => {
+    const email = emailInput.value.trim();
+
+    if (!email || !email.includes("@")) {
+        showToast("Введите корректный email");
+        return;
+    }
+
+    const person = document.createElement("div");
+    person.className = "person";
+
+    person.innerHTML = `
+        <span>${email}<br><small>Приглашённый пользователь</small></span>
+        <select>
+            <option>Просмотрщик</option>
+            <option>Комментатор</option>
+            <option selected>Редактор</option>
+        </select>
+    `;
+
+    peopleList.appendChild(person);
+    emailInput.value = "";
+    showToast("Пользователь добавлен");
+});
+
+/* Инициализация */
+
+const savedFileName = localStorage.getItem("miniSheetsFileName");
+
+if (savedFileName) {
+    document.getElementById("fileName").value = savedFileName;
+}
+
+renderTabs();
+renderGrid();
+</script>
+
 </body>
 </html>
